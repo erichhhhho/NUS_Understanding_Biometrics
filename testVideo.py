@@ -12,6 +12,9 @@ while(True):
     cv2.imshow('frame',gray)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+    elif cv2.waitKey(100) & 0xFF ==ord('s'):
+        cv2.imwrite('test.jpg',frame)
+        break
 # When everything done, release the capture
 print(cap.get(3))
 cap.release()

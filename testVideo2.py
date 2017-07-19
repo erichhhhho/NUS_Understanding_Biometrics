@@ -14,6 +14,9 @@ while(cap.isOpened()):
 
     if cv2.waitKey(100) & 0xFF ==ord('q'):
         break
+    elif cv2.waitKey(100) & 0xFF ==ord('s'):
+        cv2.imwrite('test.jpg',frame)
+
 
 cap.release()
 cv2.destroyAllWindows()
