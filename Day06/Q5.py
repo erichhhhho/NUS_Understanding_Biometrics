@@ -5,6 +5,16 @@ Created on Sat Jul 22 19:51:01 2017
 
 @author: HEWEI
 """
+
+"""Q5.(Using SV D for compression.) Stepping gingerly from the spaceship onto Mar-
+tian soil, you heave a sigh of relief. All these years of training at the School of
+Cosmology (SOC) has nally paid o: you are on your rst mission to Mars. As you
+survey the barren and rocky landscape, your eyes spot something unusual in the dis-
+tance. You move closer and discover what looks like a Martian 
+ower. Very excitedly,
+you whip out your high resolution digital camera and take a few shots of the exotic
+plant."""
+
 import  cv2
 from PIL import Image
 from PIL import ImageOps
@@ -34,6 +44,11 @@ Vtk = Vt[:K, :]
 aImk = numpy.dot(Uk, numpy.dot( Sk, Vtk))
 Imk = Image.fromarray(aImk)
 
+print(U.shape)
+print(S.shape)
+print(Vt.shape)
+
+
 K = 50
 Sk50 = numpy.diag(S[:K])
 Uk50 = U[:, :K]
@@ -54,6 +69,10 @@ Uk200 = U[:, :K]
 Vtk200 = Vt[:K, :]
 aImk200 = numpy.dot(Uk200, numpy.dot(Sk200, Vtk200))
 Imk200 = Image.fromarray(aImk200)
+
+print(Uk50.shape)
+print(Sk50.shape)
+print(Vtk50.shape)
 
 pyplot.subplot(231)
 pyplot.plot(S,'b.')
