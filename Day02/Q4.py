@@ -14,16 +14,16 @@ Created on Mon Jul 17 18:16:37 2017
  6.Reverse the list.
 """
 
-L=[]
+L = []
 
 L.append(12)
 L.append(8)
 L.append(9)
-L.insert(0,9)
+L.insert(0, 9)
 L.extend(L.copy())
 
 for item in L:
-    if item==8:
+    if item == 8:
         L.remove(item)
-        
+
 L.reverse()
