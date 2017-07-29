@@ -7,8 +7,6 @@ from PIL import Image
 from matplotlib import pyplot
 
 
-
-
 def ComputeNorm(x):
     # function r=ComputeNorm(x)
     # computes vector norms of x
@@ -196,7 +194,7 @@ if __name__ == '__main__':
 
         # Project to the PCA feature space
         y = np.dot(We.transpose(), im_vec - m)
-        #print(m)
+        # print(m)
         # Search for the closest template on Z(Using Euclidean distance metric)
         count = 0
         result = Z[:, 0]
@@ -245,72 +243,270 @@ if __name__ == '__main__':
                 confusion_array[j][8] += 1
             elif items == 9:
                 confusion_array[j][9] += 1
-    print(confusion_array)
+    #print(confusion_array)
 
     """2.Draw the mean face and top 8 eigenfaces"""
-    meanface=float2uint8(m.reshape((160, 140)))
-    meanfaceimage=Image.fromarray(meanface)
-    eigenfaces=np.array([float2uint8(We[:,0].reshape((160, 140)))]*9)
-    eigenfacesimage=np.array([3]*9)
+    meanface = float2uint8(m.reshape((160, 140)))
+    meanfaceimage = Image.fromarray(meanface)
+    eigenfaces = np.array([float2uint8(We[:, 0].reshape((160, 140)))] * 9)
+    eigenfacesimage = np.array([3] * 9)
 
-    for i in range(0,9):
-        eigenfaces[i]=float2uint8(We[:,i].reshape((160, 140)))
+    for i in range(0, 9):
+        eigenfaces[i] = float2uint8(We[:, i].reshape((160, 140)))
 
-    axes=pyplot.subplot(331)
+    axes = pyplot.subplot(331)
     pyplot.imshow(Image.fromarray(eigenfaces[0]), 'gray')
     pyplot.title('Eigenface1')
     axes.set_xticks([])
     axes.set_yticks([])
 
-    axes =pyplot.subplot(332)
+    axes = pyplot.subplot(332)
     pyplot.imshow(Image.fromarray(eigenfaces[1]), 'gray')
     pyplot.title('Eigenface2')
     axes.set_xticks([])
     axes.set_yticks([])
 
-    axes =pyplot.subplot(333)
+    axes = pyplot.subplot(333)
     pyplot.imshow(Image.fromarray(eigenfaces[2]), 'gray')
     pyplot.title('Eigenface3')
     axes.set_xticks([])
     axes.set_yticks([])
 
-    axes =pyplot.subplot(334)
+    axes = pyplot.subplot(334)
     pyplot.imshow(Image.fromarray(eigenfaces[3]), 'gray')
     pyplot.title('Eigenface4')
     axes.set_xticks([])
     axes.set_yticks([])
 
-    axes =pyplot.subplot(335)
+    axes = pyplot.subplot(335)
     pyplot.imshow(Image.fromarray(eigenfaces[4]), 'gray')
     pyplot.title('Eigenface5')
     axes.set_xticks([])
     axes.set_yticks([])
 
-    axes =pyplot.subplot(336)
+    axes = pyplot.subplot(336)
     pyplot.imshow(Image.fromarray(eigenfaces[5]), 'gray')
     pyplot.title('Eigenface6')
     axes.set_xticks([])
     axes.set_yticks([])
 
-    axes =pyplot.subplot(337)
+    axes = pyplot.subplot(337)
     pyplot.imshow(Image.fromarray(eigenfaces[6]), 'gray')
     pyplot.title('Eigenface7')
     axes.set_xticks([])
     axes.set_yticks([])
 
-    axes =pyplot.subplot(338)
-    pyplot.imshow(Image.fromarray(eigenfaces[7]),'gray')
+    axes = pyplot.subplot(338)
+    pyplot.imshow(Image.fromarray(eigenfaces[7]), 'gray')
     pyplot.title('Eigenface8')
     axes.set_xticks([])
     axes.set_yticks([])
 
-    axes =pyplot.subplot(339)
+    axes = pyplot.subplot(339)
     pyplot.imshow(meanfaceimage, 'gray')
     pyplot.title('Mean')
     axes.set_xticks([])
     axes.set_yticks([])
 
+    # pyplot.show()
+
+    """3.LDA"""
+    directory = 'F:/Desktop/NUS Summer/HW5/face/train'
+    K1 = 90
+    W1 = W[:, :K1]
+    #print(W1.shape)
+
+    LDA = []
+    for f in os.listdir(directory):
+        if not f[-3:] == 'bmp':
+            continue
+        infile = os.path.join(directory, f)
+        im = cv2.imread(infile, 0)
+        # turn an array into vector
+        im_vec = np.reshape(im, -1)
+        x_LDA = np.dot(W1.transpose(), im_vec - m)
+        LDA.append(x_LDA)
+
+    LDA = np.array(LDA, dtype=np.float32)
+    LDA = LDA.transpose()
+
+    LDAW, Centers, classLabels=myLDA(LDA,idLabel)
+    # print(LDAW.shape)
+    # print(classLabels.shape)
+
+    """Calculate the Z_LDA matrix, whose dimesion is Df-by-10 and contains the mean feaure vector
+        of each person.(ith column corresponds to person with label i) Df=9 i.e(C-1)"""
+    directory = 'F:/Desktop/NUS Summer/HW5/face/test'
+    Z_LDA = []
+    count = 0
+    temp = np.array([0])
+    for f in os.listdir(directory):
+        if not f[-3:] == 'bmp':
+            continue
+        infile = os.path.join(directory, f)
+        im = cv2.imread(infile, 0)
+        # turn an array into vector
+        im_vec = np.reshape(im, -1)
+        y = np.dot((np.dot(LDAW.transpose(), W1.transpose())),im_vec - m)
+        temp = temp + y
+        count += 1
+        if count == 12:
+            temp = temp / 12
+            Z_LDA.append(temp)
+            temp = np.array([0])
+            count = 0
+
+    Z_LDA = np.array(Z_LDA, dtype=np.float32)
+    Z_LDA = np.array(Z_LDA).transpose()
+
+    #print(Z_LDA.shape)
+
+    """Perform identification of test data"""
+    directory = 'F:/Desktop/NUS Summer/HW5/face/test'
+    Label = []  # Label will store list of identity label
+    OutputLabel_LDA = []  # Label will store list of result label
+    for f in os.listdir(directory):
+        if not f[-3:] == 'bmp':
+            continue
+        infile = os.path.join(directory, f)
+        im = cv2.imread(infile, 0)
+        # turn an array into vector
+        im_vec = np.reshape(im, -1)
+
+        name = f.split('_')[0][-1]
+        Label.append(int(name))
+
+        # Project to the PCA feature space
+        y = np.dot((np.dot(LDAW.transpose(), W1.transpose())),im_vec - m)
+        # print(m)
+        # Search for the closest template on Z(Using Euclidean distance metric)
+        count = 0
+        result = Z_LDA[:, 0]
+
+        min = 10000000
+        for col in Z_LDA.transpose():
+            count += 1
+            if np.linalg.norm(col - y) < min:
+                # nearest distance min
+                min = np.linalg.norm(col - y)
+                # identification result label
+                temp = count - 1
+                # match template on Z
+                result = col
+
+        OutputLabel_LDA.append(temp)
+        ResultLabel_LDA = np.array(OutputLabel_LDA)
+        Label1 = np.array(Label)
+
+    # print(OutputLabel_LDA)
+    # print(Label1)
+
+    """Draw the Confusion Matrix of LDA"""
+    confusion_array_LDA = np.zeros([10, 10])
+    Result_LDA = ResultLabel_LDA.reshape((10, 12))
+    Labels = Label1.reshape((10, 12))
+
+    for j in range(0, 10):
+        for items in Result_LDA[j]:
+            if items == j:
+                confusion_array_LDA[j][j] += 1
+            elif items == 0:
+                confusion_array_LDA[j][0] += 1
+            elif items == 1:
+                confusion_array_LDA[j][1] += 1
+            elif items == 2:
+                confusion_array_LDA[j][2] += 1
+            elif items == 3:
+                confusion_array_LDA[j][3] += 1
+            elif items == 4:
+                confusion_array_LDA[j][4] += 1
+            elif items == 5:
+                confusion_array_LDA[j][5] += 1
+            elif items == 6:
+                confusion_array_LDA[j][6] += 1
+            elif items == 7:
+                confusion_array_LDA[j][7] += 1
+            elif items == 8:
+                confusion_array_LDA[j][8] += 1
+            elif items == 9:
+                confusion_array_LDA[j][9] += 1
+
+    """2.Draw the mean faces of each class using centers """
+    #print(Centers.shape)
+    #print(LDAW.shape)
+    Cp=np.dot(LDAW,Centers)
+    #print(Cp.shape)
+    Cr=np.dot(W[:, :90],Cp)
+    print('+m前')
+    print(Cr)
+    for col in Cr.transpose():
+        col+=m.transpose()
+    print('+m后')
+    print(Cr)
+    Cr=float2uint8(Cr)
+    #print(m.shape)
+    #print(Cr.shape)
+    #Cr=np.array(Cr)
+    print(Cr)
+
+    axes = pyplot.subplot(251)
+    pyplot.imshow(Image.fromarray(Cr[:,0].reshape((160, 140))), 'gray')
+    pyplot.title('Center1')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
+    axes = pyplot.subplot(252)
+    pyplot.imshow(Image.fromarray(Cr[:,1].reshape((160, 140))), 'gray')
+    pyplot.title('Center2')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
+    axes = pyplot.subplot(253)
+    pyplot.imshow(Image.fromarray(Cr[:,2].reshape((160, 140))), 'gray')
+    pyplot.title('Center3')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
+    axes = pyplot.subplot(254)
+    pyplot.imshow(Image.fromarray(Cr[:,3].reshape((160, 140))), 'gray')
+    pyplot.title('Center4')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
+    axes = pyplot.subplot(255)
+    pyplot.imshow(Image.fromarray(Cr[:,4].reshape((160, 140))), 'gray')
+    pyplot.title('Center5')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
+    axes = pyplot.subplot(256)
+    pyplot.imshow(Image.fromarray(Cr[:,5].reshape((160, 140))), 'gray')
+    pyplot.title('Center6')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
+    axes = pyplot.subplot(257)
+    pyplot.imshow(Image.fromarray(Cr[:,6].reshape((160, 140))), 'gray')
+    pyplot.title('Center7')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
+    axes = pyplot.subplot(258)
+    pyplot.imshow(Image.fromarray(Cr[:,7].reshape((160, 140))), 'gray')
+    pyplot.title('Center8')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
+    axes = pyplot.subplot(259)
+    pyplot.imshow(Image.fromarray(Cr[:,8].reshape((160, 140))), 'gray')
+    pyplot.title('Center9')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
+    axes = pyplot.subplot(2,5,10)
+    pyplot.imshow(Image.fromarray(Cr[:,9].reshape((160, 140))), 'gray')
+    pyplot.title('Center10')
+    axes.set_xticks([])
+    axes.set_yticks([])
+
     pyplot.show()
-    #
-    # for x in range(0,9):
-    #     We[:,x].reshape((160, 140))
