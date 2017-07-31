@@ -1,0 +1,22 @@
+Day04
+Median filter ->good job
+
+Convolution(SinalProcessing.pdf)
+
+Morphology operation e.g for edge dectection(close the gap)
+(joint edge broken edges )
+maybe can prove if it is edge or not in mathematics
+
+edge detection (OpenCV Canny,Prewitt)
+
+
+Hough Transform(not often use)
+
+
+How to do Glowing edges:
+1.find edges
+2.Clean up edges(e.g Morphology)
+3.Thicken come edges
+4.Treat edge map as mask, multiply with the original image (HSV,change the S channel, so that you can change the saturation, etc)
+
+maybe the texture manipulation is necessary

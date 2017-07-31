@@ -1,0 +1,23 @@
+Day03
+EM spectrum
+d neg for RAW images
+BAYER Pattern demosaicing
+high dynamic quantization(8bit -> xx bit)
+Gamunt=range of colors
+
+image search(CIE)
+
+thresholding
+fourier transform
+gamma correction
+
+
+PS Demo:
+RGB->Grey scale (Average of RGB or just use Green channel)
+index color(There is a table like: index,R,G,B length of the table is the numbers of the color), other color space
+
+historgram equalization,linear stretching:s=(r-rmin)/(rmax-rmin) will fail when 最大值最小值距离大部分像素值远（需要ignore，而使用r95%和r5%）
+Local enhancement
+(low-contrast->high-contrast)
+
+(640*480)
