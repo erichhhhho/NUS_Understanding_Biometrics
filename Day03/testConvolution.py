@@ -13,7 +13,7 @@ print(B)
 #print(C)
 #print(D)
 from scipy import signal
-filtered=signal.convolve(A, B, 'same')
+filtered=signal.convolve(C, D, 'full')
 print(filtered)
 
 
