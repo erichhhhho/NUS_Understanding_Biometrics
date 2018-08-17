@@ -2,8 +2,11 @@
 :monkey_face::monkey_face::monkey_face:
 
 > Tutor: Professor Terence Sim
+
 > Project name: Biometrics in Depth
+
 > Location: School of Computing, National University of Singapore
+
 > Duration: From July 12 -August 10 
 
 
