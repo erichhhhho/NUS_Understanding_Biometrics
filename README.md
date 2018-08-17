@@ -1,10 +1,10 @@
 # NUS SUMMER Program@2017
-:monkey_face:
+:monkey_face::monkey_face::monkey_face:
 
-## Tutor: Professor Terence Sim
-## Project name: Biometrics in Depth
-## Location: School of Computing, National University of Singapore
-## Duration: From July 12 -August 10 
+> Tutor: Professor Terence Sim
+> Project name: Biometrics in Depth
+> Location: School of Computing, National University of Singapore
+> Duration: From July 12 -August 10 
 
 
 - Utilized basic Computer Vision techniques on bio-images (e.g SVD for image compression, image filtering, histogram equalization and color space conversion for image processing)
