@@ -1,4 +1,4 @@
-# NUS SUMMER Program@2017
+# NUS SUMMER Program @2017
 :monkey_face::monkey_face::monkey_face:
 
 > Tutor: Professor Terence Sim
